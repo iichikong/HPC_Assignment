@@ -1,0 +1,22 @@
+HPC Spring 2023: Advanced Topics in Numerical Analysis:
+Assignment 2
+
+Keigo Ando (ka2705)
+
+
+4.
+My implementation can be seen in the source file `pipleline.cpp`
+
+The processor I used for thsi assignment is an 8 core AMD Ryzen 7 4700 with Radeon Graphics. Cpu MHz is 1996.193 and cache size is 512 KB. And the program is executed on the WSL2 enviroment.The experiment was performed with the optimization flag set to "-O0" and a vector size of 400000000.
+
+Compared to the baseline case, the pipelined case was clearly faster (more than twice as fast), including the simple unrolling case. On the other hand, for the more optimized pipelined case, the significant speedup seemed to depend on a case-by-case basis, with no significant difference observed.
+
+A speed increase of about 10 to 20 percent is observed for those with Unrolling by factor of 4 compared to those with Unrolling by factor of 2.
+
+Specific timings in this experiment are as follows.
+
+Baseline                               : 1174.557208 ms 
+Unrolliing by factor of 2              : 564.565127 ms  
+Unrolling by factor of 2 with more opt : 595.824716 ms  
+Unrolling by factor of 4               : 488.744569 ms  
+Unrolling by factor of 4 with more opt : 477.032686 ms  

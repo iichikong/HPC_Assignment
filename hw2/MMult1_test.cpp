@@ -1,4 +1,6 @@
-// g++ -std=c++11 -fopenmp -O3 -march=native MMult1_omp.cpp && ./a.out
+// g++ -std=c++11 -fopenmp -O3 -march=native MMult4.cpp && ./a.out
+// g++ -std=c++11 -g -O3 -march=native MMult3.cpp -o MMult3 && valgrind
+// --leak-check=full ./MMult3
 
 #include <math.h>
 #include <stdio.h>
@@ -8,13 +10,15 @@
 #endif
 #include "utils.h"
 
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 12
 
-// Note: matrices are stored in column major order; i.e. the array elements in
-// the (m x n) matrix C are stored in the sequence: {C_00, C_10, ..., C_m0,
-// C_01, C_11, ..., C_m1, C_02, ..., C_0n, C_1n, ..., C_mn}
+// Note: matrices are stored in column major order; i.e. the array elements
+// in the (m x n) matrix C are stored in the sequence: {C_00, C_10, ...,
+// C_m0, C_01, C_11, ..., C_m1, C_02, ..., C_0n, C_1n, ..., C_mn}
 void MMult0(long m, long n, long k, double *a, double *b, double *c) {
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
     for (long j = 0; j < n; j++) {
         for (long p = 0; p < k; p++) {
             for (long i = 0; i < m; i++) {
@@ -43,12 +47,28 @@ void MMult1(long m, long n, long k, double *a, double *b, double *c) {
         }
     }
 #else
-    const long first = BLOCK_SIZE;
+    const long pb = BLOCK_SIZE;
+    const long ib = BLOCK_SIZE;
+    double acc00, acc01, acc10, acc11;
+    for (long pp = 0; pp < n; pp += pb) {
+        for (long j = 0; j < n; j += 2) {
+            for (long ii = 0; ii < n; ii += ib) {
+                for (long i = ii; i < ii + ib; i += 2) {
+                    acc00 = c[i + j * n];
+                    acc01 = c[i + (j + 1) * n];
+                    acc10 = c[i + 1 + j * n];
+                    acc11 = c[i + 1 + (j + 1) * n];
+                    for (long p = pp; p < pp + ib; p++) {
+                        acc00 += a[i + p * n] * b[p + j * n];
+                        acc01 += a[i + p * n] * b[p + (j + 1) * n];
+                        acc10 += a[i + 1 + p * n] * b[p + j * n];
+                        acc11 += a[i + 1 + p * n] * b[p + (j + 1) * n];
 
-    for (long p = 0; p < n; p += first) {
-        for (long p = 0; p < k; p++) {
-            for (long j = first; j < (first + first); j++) {
-                for (long i = 0; i < m; i++) {
+                        c[i + j * n] = acc00;
+                        c[i + (j + 1) * n] = acc01;
+                        c[i + 1 + j * n] = acc10;
+                        c[i + 1 + (j + 1) * n] = acc11;
+                    }
                 }
             }
         }
@@ -57,12 +77,15 @@ void MMult1(long m, long n, long k, double *a, double *b, double *c) {
 }
 
 int main(int argc, char **argv) {
-    const long PFIRST = BLOCK_SIZE;
+    const long PFIRST = BLOCK_SIZE * BLOCK_SIZE * 4;
     const long PLAST = 2000;
-    const long PINC =
-        std::max(50 / BLOCK_SIZE, 1) * BLOCK_SIZE;  // multiple of BLOCK_SIZE
+    const long PINC = BLOCK_SIZE * BLOCK_SIZE;
+    //        std::max(200 / BLOCK_SIZE, 1) * BLOCK_SIZE;
+    //        // multiple of BLOCK_SIZE
 
-    printf(" Dimension       Time    Gflop/s       GB/s        Error\n");
+    printf(
+        " Dimension       Time    Gflop/s       GB/s "
+        "       Error\n");
     for (long p = PFIRST; p < PLAST; p += PINC) {
         long m = p, n = p, k = p;
         long NREPEATS = 1e9 / (m * n * k) + 1;
