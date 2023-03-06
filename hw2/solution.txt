@@ -1,0 +1,61 @@
+HPC Spring 2023: Advanced Topics in Numerical Analysis:
+Assignment 2, Written Part
+
+Keigo Ando (ka2705)
+
+2. 
+The processor I used for this assignment is an 8-core AMD Ryzen 7 4700 with Radeon Graphics. Cpu MHz is 1996.193, and the cache size is 512 KB. And the program is executed on the WSL2 environment. 
+
+The blocked version of the implementation achieves the highest flop rate with BLOCK_SIZE 12 * 12 on my computer. 
+Although using OpenMP makes the program achieve more high performance, the performance in the blocked version is still better than in the baseline case, which can be seen specifically for the larger matrix with a lower decrease in flop rate and bandwidth. For the large matrix the performance does not seem to be different between the OpenMP version and the blocked version.
+
+The timing for various matrix sizes obtained with the blocked version and OpenMP version are as follows:
+
+-- Blocked version
+ Dimension       Time    Gflop/s       GB/s        Error
+       144   0.057000  35.098351  70.196701 0.000000e+00
+       288   0.058747  34.156108  68.312215 0.000000e+00
+       432   0.075956  27.597084  55.194169 0.000000e+00
+       576   0.088847  25.811054  51.622108 0.000000e+00
+       720   0.131736  16.999801  33.999601 0.000000e+00
+       864   0.168697  15.292999  30.585998 0.000000e+00
+      1008   0.138384  14.802225  29.604449 0.000000e+00
+      1152   0.208973  14.631809  29.263618 0.000000e+00
+      1296   0.310920  14.002214  28.004427 0.000000e+00
+      1440   0.425303  14.041673  28.083346 0.000000e+00
+      1584   0.534187  14.879964  29.759928 0.000000e+00
+      1728   0.685097  15.062917  30.125835 0.000000e+00
+      1872   0.911232  14.398537  28.797074 0.000000e+00
+
+-- OpenMP version
+ Dimension       Time    Gflop/s       GB/s        Error
+       144   0.025286  79.118950 158.237900 0.000000e+00
+       288   0.029250  68.601615 137.203230 0.000000e+00
+       432   0.028802  72.778063 145.556127 0.000000e+00
+       576   0.031474  72.861725 145.723449 0.000000e+00
+       720   0.055135  40.618227  81.236453 0.000000e+00
+       864   0.119176  21.647695  43.295389 0.000000e+00
+      1008   0.107480  19.058363  38.116726 0.000000e+00
+      1152   0.263057  11.623525  23.247050 0.000000e+00
+      1296   0.253874  17.148500  34.297001 0.000000e+00
+      1440   0.331935  17.991399  35.982797 0.000000e+00
+      1584   0.570562  13.931325  27.862650 0.000000e+00
+      1728   0.788201  13.092550  26.185099 0.000000e+00
+      1872   0.862640  15.209604  30.419208 0.000000e+00
+
+4.
+My implementation can be seen in the source file `pipeline.cpp`
+
+The processor I used for this assignment is an 8-core AMD Ryzen 7 4700 with Radeon Graphics. Cpu MHz is 1996.193, and the cache size is 512 KB. And the program is executed on the WSL2 environment. The experiment was performed with the optimization flag set to "-O0" and a vector size of 400000000.
+
+Compared to the baseline case, the pipelined case was clearly faster (more than twice as fast), including the simple unrolling case. On the other hand, for the more optimized pipelined case, the significant speedup seemed to depend on a case-by-case basis, with no significant difference observed.
+
+A speed increase of about 10 to 20 percent is observed for those with Unrolling by a factor of 4 compared to those with Unrolling by a factor of 2.
+
+Specific timings in this experiment are as follows.
+
+Baseline                               : 1174.557208 ms 
+Unrolling by factor of 2               : 564.565127 ms  
+Unrolling by factor of 2 with more opt : 595.824716 ms  
+Unrolling by factor of 4               : 488.744569 ms  
+Unrolling by factor of 4 with more opt : 477.032686 ms  
