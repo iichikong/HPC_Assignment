@@ -15,29 +15,29 @@ void scan_seq(long* prefix_sum, const long* A, long n) {
 }
 
 void scan_omp(long* prefix_sum, const long* A, long n) {
-    int p = 2;  // omp_get_max_threads();
+    int p = 8;  // omp_get_max_threads();
     int chunk_size = (n + p - 1) / p;
 
     // Step 1: Split the input array into p parts and perform local scans
 
-    // #pragma omp parallel num_threads(p)
-    //     {
-    //         int t = omp_get_thread_num();
+#pragma omp parallel num_threads(p)
+    {
+        int t = omp_get_thread_num();
 
-    //        int start = t * chunk_size;
-    //        int end = std::min(start + chunk_size, (int)n);
-    // printf("thread %d of %d: start %d\n", t + 1, p, start);
+        int start = t * chunk_size;
+        int end = std::min(start + chunk_size, (int)n);
+        // printf("thread %d of %d: start %d\n", t + 1, p, start);
 
-    // long local_sum = 0;
-    // for (int i = start; i < end; ++i) {
-    //    local_sum += A[i];
-    //    prefix_sum[i + 1] = local_sum;
-    //}
-#pragma pragma omp parallel num_threads(p)
-    for (long i = 1; i < n; i++) {
-        prefix_sum[i] = prefix_sum[i - 1] + A[i - 1];
+        long local_sum = 0;
+        for (int i = start; i < end; ++i) {
+            local_sum += A[i];
+            prefix_sum[i + 1] = local_sum;
+        }
+        // #pragma pragma omp parallel for num_threads(p)
+        // for (long i = 1; i < n; i++) {
+        //     prefix_sum[i] = prefix_sum[i - 1] + A[i - 1];
+        // }
     }
-    //}
 
     // Step 2: Compute the correction values
     long* partial_sums = (long*)malloc(p * sizeof(long));
