@@ -4,13 +4,13 @@
 
 1. 
 
-- (a) For the first loop in `thread1` it takes `1+2+...+n/2=1/8n^2+n/4` and it takes `n/2+(n/2+1)+...+n = 3/8n^2+1/4n`
+- (a) For the first loop in `thread1` it takes `1+2+...+n/2=1/8n^2+n/4` and in `thread2`, it takes `n/2+(n/2+1)+...+n = 3/8n^2+1/4n` then the wating time is `1/4n^2`. For the second loop in `thread1` it takes `(n-1) + (n-2) + .... + n/2 = 3/8n^2 - 1/4n` and in `thread2` it takes `n/2 + (n/2 - 1) + ... + 0 = n^2/8 + n/4` in `thread2`. Then the waiting time for second loop is `1/4n^2-n/2`. Then total waiting time is `1/2n^2-1/2n`.
 
-- (b)
+- (b) For the first loop in `thread1` it takes `1+3+...+(n-1) = n^2/4` and in `thread2` it takes `2+4+...+n = n^2/4+n/2` then the wating time is `n/2`. For the second loop in `thread1` it takes `(n-1) + (n-3) + ... + 1 = n^2/4` and in `thread2` it takes `(n-2) + (n-4) + ... + 0 = n^2/4 - n/2`. Then waiting time for the second loop is `n/2`. Then total waiting time is `n`.
 
-- (c)
+- (c) It improves the speeding. For example, if `n=10`, for the second loop, `thread1` executes `f(9), f(6),f(5), f(2), f(1)` and `thread2` executes `f(8), f(7), f(4), f(3),f(0)`.  In this case, the waiting time is only `1`, which is much smaller than the case in (a) and (b).
 
-- (d)
+- (d) It is not possible to completely eliminate waiting time by any means, since the total processing time may be an odd number. However, as we saw in the previous problem, it is possible to maximally reduce latency as much as possible by using dynamic or guided processing and by keeping the final chunk size small. In this case, the overhead may be the time required to process which process is assigned to which thread, so it is important to balance chunk size and other factors.
 
 2.
 
