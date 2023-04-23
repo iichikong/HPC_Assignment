@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 
     if (argc < 2) {
         if (rank == 0) {
-            std::cout << "Usage: mpirun -np <number_of_processes> ./ring <N_loops>\n";
+            std::cout << "Usage: mpirun -np <number_of_processes> ./int_ring <N_loops>\n";
         }
         MPI_Finalize();
         return 0;
