@@ -1,5 +1,5 @@
-#include <iostream>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 #include <mpi.h>
 
 int main(int argc, char** argv) {
@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 
     if (argc < 2) {
         if (rank == 0) {
-            std::cout << "Usage: mpirun -np <number_of_processes> ./int_ring <N_loops>\n";
+            printf("Usage: mpirun -np <number_of_processes> ./int_ring <N_loops>\n" );
         }
         MPI_Finalize();
         return 0;
@@ -42,9 +42,9 @@ int main(int argc, char** argv) {
     double elapsed_time = end_time - start_time;
 
     if (rank == 0) {
-        std::cout << "Result after " << N_loops << " loops: " << value << std::endl;
-        std::cout << "Total time: " << elapsed_time << " s" << std::endl;
-        std::cout << "Estimated latency: " << (elapsed_time / (N_loops * size)) << " s" << std::endl;
+        printf("Result after %d loops: %d\n", N_loops, value);
+        printf("Total time: %f s\n", elapsed_time);
+        printf("Estimated latency: %f s\n", (elapsed_time / (N_loops * size)));
     }
 
     MPI_Finalize();

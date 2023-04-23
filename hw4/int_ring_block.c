@@ -1,6 +1,6 @@
 #include <mpi.h>
-#include <iostream>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 
     if (argc < 2) {
         if (rank == 0) {
-            std::cout << "Usage: mpirun -np <number_of_processes> ./int_ring_block <N_loops>\n";
+            printf("Usage: mpirun -np <number_of_processes> ./int_ring_block <N_loops>\n");
         }
         MPI_Finalize();
         return 0;
@@ -43,8 +43,8 @@ int main(int argc, char** argv) {
     double elapsed_time = end_time - start_time;
 
     if (rank == 0) {
-        std::cout << "Total time: " << elapsed_time << " s" << std::endl;
-        std::cout << "Estimated bandwidth: " << ((static_cast<double>(array_size) * sizeof(int) * N_loops * size) / elapsed_time) << " bytes/s" << std::endl;
+        printf("Total time: %f s\n", elapsed_time); 
+        printf("Estimated bandwidth: %f bytes/s\n", (((double)array_size * sizeof(int) * N_loops * size) / elapsed_time/1e9));
     }
 
     free(data);
